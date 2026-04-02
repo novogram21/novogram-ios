@@ -9888,26 +9888,20 @@
         }
         function updateCallControlsVisibility() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isApp = (window.chrome && window.chrome.webview) || navigator.userAgent.includes('wv');
 
             const btnScr = document.getElementById('btnScr');
             const btnSpeaker = document.getElementById('btnSpeaker');
             const btnFlip = document.getElementById('btnFlip');
 
             if (!isMobile) {
-                // 1. НА КОМПЬЮТЕРЕ: Показываем "Экран", прячем "Динамик" и "Смену камеры"
+                // НА КОМПЬЮТЕРЕ: Экран - ДА, Динамик - НЕТ
                 if (btnScr) btnScr.style.display = 'flex';
                 if (btnSpeaker) btnSpeaker.style.display = 'none';
                 if (btnFlip) btnFlip.style.display = 'none';
-            } else if (isMobile && isApp) {
-                // 2. В МОБИЛЬНОМ ПРИЛОЖЕНИИ (MAUI): Прячем "Экран", показываем "Динамик" и "Камеру"
+            } else {
+                // НА МОБИЛЬНЫХ (и iPhone, и Android, и PWA): Динамик - ДА, Камера - ДА, Экран - НЕТ
                 if (btnScr) btnScr.style.display = 'none';
                 if (btnSpeaker) btnSpeaker.style.display = 'flex';
-                if (btnFlip) btnFlip.style.display = 'flex';
-            } else {
-                // 3. В МОБИЛЬНОМ БРАУЗЕРЕ (Safari/Chrome): Прячем "Экран" и "Динамик", оставляем только "Камеру"
-                if (btnScr) btnScr.style.display = 'none';
-                if (btnSpeaker) btnSpeaker.style.display = 'none';
                 if (btnFlip) btnFlip.style.display = 'flex';
             }
         }
@@ -12067,16 +12061,11 @@
             if (isEarpiece) {
                 btn.innerHTML = iconEar;
                 btn.classList.add('muted-state');
-
-                // --- ЗВУК В УХО ---
                 if (window.AudioToggle) AudioToggle.setAudioMode(AudioToggle.EARPIECE);
                 if (navigator.proximity) navigator.proximity.enableSensor();
-
             } else {
                 btn.innerHTML = iconLoud;
                 btn.classList.remove('muted-state');
-
-                // --- ГРОМКАЯ СВЯЗЬ ---
                 if (window.AudioToggle) AudioToggle.setAudioMode(AudioToggle.SPEAKER);
                 if (navigator.proximity) navigator.proximity.disableSensor();
             }
