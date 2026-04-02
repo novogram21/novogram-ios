@@ -20,7 +20,9 @@
   "homepage": "https://github.com/novogram21/novogram-ios#readme",
   "dependencies": {
     "@capacitor/core": "^8.3.0",
-    "@capacitor/ios": "^8.3.0"
+    "@capacitor/ios": "^8.3.0",
+    "cordova-plugin-audiotoggle": "^1.0.3",
+    "cordova-plugin-proximity-sensor": "^1.0.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.3.0"

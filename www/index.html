@@ -9077,6 +9077,13 @@
             }
         }
         function endCall(isInitiator = true, isRemote = false) {
+            if (window.AudioToggle) {
+                AudioToggle.setAudioMode(AudioToggle.SPEAKER); // Возвращаем обычный динамик для системных звуков
+            }
+            if (navigator.proximity) {
+                navigator.proximity.disableSensor(); // Отключаем гашение экрана
+            }
+            
             // Выключаем датчик при завершении звонка
             if (window.mauiInterop) {
                 window.mauiInterop.postMessage("disable_proximity");
@@ -11994,14 +12001,15 @@
 
             if (btn) {
                 btn.innerHTML = iconEar;
-                btn.classList.add('muted-state'); // Белый фон (означает, что динамик приложен к уху)
+                btn.classList.add('muted-state');
             }
 
-            // Шлем команду в C# переключить на ухо при старте звонка
-            if (window.mauiInterop && window.mauiInterop.postMessage) {
-                window.mauiInterop.postMessage("audio_ear");
-            } else if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage("audio_ear");
+            // --- НОВЫЙ КОД ДЛЯ ПЛАГИНОВ ---
+            if (window.AudioToggle) {
+                AudioToggle.setAudioMode(AudioToggle.EARPIECE); // Переводим звук в ухо
+            }
+            if (navigator.proximity) {
+                navigator.proximity.enableSensor(); // Включаем датчик (гасим экран)
             }
         }
 
@@ -12037,19 +12045,18 @@
             if (isEarpiece) {
                 btn.innerHTML = iconEar;
                 btn.classList.add('muted-state');
+                
+                // --- ЗВУК В УХО ---
+                if (window.AudioToggle) AudioToggle.setAudioMode(AudioToggle.EARPIECE);
+                if (navigator.proximity) navigator.proximity.enableSensor();
 
-                if (window.mauiInterop) {
-                    window.mauiInterop.postMessage("audio_ear");
-                    window.mauiInterop.postMessage("enable_proximity"); // Вернули к уху - включили датчик
-                }
             } else {
                 btn.innerHTML = iconLoud;
                 btn.classList.remove('muted-state');
 
-                if (window.mauiInterop) {
-                    window.mauiInterop.postMessage("audio_loud");
-                    window.mauiInterop.postMessage("disable_proximity"); // Громкая связь - выключили датчик
-                }
+                // --- ГРОМКАЯ СВЯЗЬ ---
+                if (window.AudioToggle) AudioToggle.setAudioMode(AudioToggle.SPEAKER);
+                if (navigator.proximity) navigator.proximity.disableSensor();
             }
         }
 
