@@ -8146,6 +8146,11 @@
                         document.getElementById('callStatusText').style.display = 'none';
                         document.getElementById('callTimer').style.display = 'block';
                         stopAllTones(); startTimer(); startPing();
+                        
+                        // МАГИЯ ДЛЯ iOS: Перехватываем звук сразу после успешного коннекта
+                        setTimeout(() => {
+                            if (isEarpiece) forceEarpiece();
+                        }, 500);
                     }
                 }
                 else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
@@ -8166,8 +8171,16 @@
                         document.body.appendChild(remoteAudio);
                     }
                     if (!remoteAudio.srcObject) remoteAudio.srcObject = new MediaStream();
-                    remoteAudio.srcObject.addTrack(e.track);
-                    remoteAudio.play().catch(err => console.log("Ошибка аудио:", err));
+                    if (!remoteAudio.srcObject.getTracks().includes(e.track)) {
+                        remoteAudio.srcObject.addTrack(e.track);
+                    }
+                    
+                    remoteAudio.play().then(() => {
+                        // МАГИЯ ДЛЯ iOS: Как только звук пошел, жестко переводим его в ухо
+                        setTimeout(() => {
+                            if (isEarpiece) forceEarpiece();
+                        }, 300);
+                    }).catch(err => console.log("Ошибка аудио:", err));
                 }
                 else if (e.track.kind === 'video') {
                     const remoteVid = document.getElementById('remoteVideo');
@@ -8181,7 +8194,11 @@
                         const stream = remoteVid.srcObject;
                         remoteVid.srcObject = null;
                         remoteVid.srcObject = stream;
-                        remoteVid.play().catch(err => console.log("Ошибка автозапуска:", err));
+                        remoteVid.play().then(() => {
+                            setTimeout(() => {
+                                if (isEarpiece) forceEarpiece();
+                            }, 300);
+                        }).catch(err => console.log("Ошибка автозапуска:", err));
                     };
 
                     remoteVid.play().catch(err => console.log("Ошибка старта видео:", err));
@@ -12023,13 +12040,22 @@
             }
         }
 
-        function forceEarpiece() {
+        ffunction forceEarpiece() {
             isEarpiece = true;
             const btn = document.getElementById('btnSpeaker');
             if (btn) {
                 btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
                 btn.classList.add('muted-state');
             }
+
+            // Агрессивный вызов нативных плагинов Capacitor/Cordova
+            if (window.AudioToggle) {
+                window.AudioToggle.setAudioMode(window.AudioToggle.EARPIECE);
+            }
+            if (navigator.proximity) {
+                navigator.proximity.enableSensor();
+            }
+
             if (window.mauiInterop) window.mauiInterop.postMessage("audio_ear");
             else if (window.chrome && window.chrome.webview) window.chrome.webview.postMessage("audio_ear");
         }
