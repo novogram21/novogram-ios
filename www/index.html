@@ -8585,10 +8585,15 @@
             const friendData = usersCache[currentFriendId] || {};
             document.getElementById('callCallerName').innerText = getDisplayName(currentFriendId, friendData);
 
-            updateCallStatus("Соединение...");
+            updateCallStatus("Подключение камеры/микрофона...");
             playConnectingTone();
 
             try {
+                // 🔥 ГЛАВНЫЙ ФИКС iOS: Запрашиваем медиа ДО любых сетевых запросов (Firebase)!
+                console.log("📞 [CALLER] Запрашиваем камеру/микрофон...");
+                await getMedia(isVideoCall);
+
+                // После успешного получения микрофона продолжаем логику
                 setupPeerConnection();
 
                 console.log("📞 [CALLER] Создаем сессию в Firebase...");
@@ -8603,9 +8608,6 @@
                 sessionRef.child('answerCandidates').on('child_added', snap => {
                     addCandidateSafely(snap.val());
                 });
-
-                console.log("📞 [CALLER] Запрашиваем камеру/микрофон...");
-                await getMedia(isVideoCall);
 
                 console.log("📞 [CALLER] Создаем Offer...");
                 const offer = await pc.createOffer();
@@ -8691,7 +8693,7 @@
                 window.mauiInterop.postMessage("enable_proximity");
             }
 
-            updateCallStatus("Соединение...");
+            updateCallStatus("Включаем микрофон...");
             updateCallControlsVisibility();
             initAudioMode();
             if (!currentCallId) return;
@@ -8704,6 +8706,11 @@
             rtdb.ref('incoming_calls/' + currentUser.uid).remove();
 
             try {
+                // 🔥 ГЛАВНЫЙ ФИКС iOS: Запрашиваем микрофон МГНОВЕННО после нажатия кнопки!
+                console.log("📥 [CALLEE] Запрашиваем свои медиа устройства...");
+                await getMedia(false);
+
+                // А вот теперь спокойно идем в Firebase
                 console.log("📥 [CALLEE] Читаем сессию из Firebase...");
                 const sessionSnap = await sessionRef.once('value');
                 const callData = sessionSnap.val();
@@ -8747,9 +8754,6 @@
                 sessionRef.child('offerCandidates').on('child_added', snap => {
                     addCandidateSafely(snap.val());
                 });
-
-                console.log("📥 [CALLEE] Запрашиваем свои медиа устройства...");
-                await getMedia(false);
 
                 console.log("📥 [CALLEE] Применяем RemoteDescription (Offer)...");
                 await pc.setRemoteDescription(new RTCSessionDescription(callData.offer));
@@ -14410,4 +14414,4 @@
         </div>
     </div>
 </body>
-</html>
+</html>git add .
