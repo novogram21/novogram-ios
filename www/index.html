@@ -5808,13 +5808,13 @@
             const actionIcon = (chatExists || isBot) ? '💬' : '➕';
 
             div.innerHTML = `
-                                            ${avatarHtml}
-                                            <div class="search-info" style="flex:1; overflow:hidden; margin-left: 10px;">
-                                                <div class="search-name" style="font-weight:bold; color:white; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${fullName}</div>
-                                                <div class="search-sub" style="font-size:13px; color:#888;">${user.username ? '@' + user.username : 'ID пользователя'}</div>
-                                            </div>
-                                            <div class="search-action" style="color:#007bff; font-size:20px;">${actionIcon}</div>
-                                        `;
+                                                ${avatarHtml}
+                                                <div class="search-info" style="flex:1; overflow:hidden; margin-left: 10px;">
+                                                    <div class="search-name" style="font-weight:bold; color:white; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${fullName}</div>
+                                                    <div class="search-sub" style="font-size:13px; color:#888;">${user.username ? '@' + user.username : 'ID пользователя'}</div>
+                                                </div>
+                                                <div class="search-action" style="color:#007bff; font-size:20px;">${actionIcon}</div>
+                                            `;
 
             div.onclick = async () => {
                 if (chatExists) {
@@ -6596,16 +6596,16 @@
                         // Аватарка (заглушка или можно подгрузить реальную)
                         const avatar = '<div class="user-item-avatar" style="background:#21232b;display:flex;align-items:center;justify-content:center;color:#8e8e93"><svg viewBox="0 0 24 24" width="55%" height="55%" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
                         div.innerHTML = `
-                                                                                        ${avatar}
-                                                                                        <div class="user-name" style="grid-row: 1/span 2; align-self:center;">
-                                                                                        ${data.fromUsername ? '@' + data.fromUsername : 'Пользователь'}
-                                                                                        <div style="font-size:12px; color:#888; font-weight:normal;">Хочет добавить вас в друзья</div>
-                                                                                        </div>
-                                                                                        <div style="grid-column:3; grid-row:1/span 2; display:flex; gap:10px;">
-                                                                                        <button onclick="accept('${doc.id}', '${data.from}', '${data.fromEmail}')" style="background:#28a745; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✓</button>
-                                                                                        <button onclick="reject('${doc.id}')" style="background:#dc3545; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✕</button>
-                                                                                        </div>
-                                                                                        `;
+                                                                                            ${avatar}
+                                                                                            <div class="user-name" style="grid-row: 1/span 2; align-self:center;">
+                                                                                            ${data.fromUsername ? '@' + data.fromUsername : 'Пользователь'}
+                                                                                            <div style="font-size:12px; color:#888; font-weight:normal;">Хочет добавить вас в друзья</div>
+                                                                                            </div>
+                                                                                            <div style="grid-column:3; grid-row:1/span 2; display:flex; gap:10px;">
+                                                                                            <button onclick="accept('${doc.id}', '${data.from}', '${data.fromEmail}')" style="background:#28a745; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✓</button>
+                                                                                            <button onclick="reject('${doc.id}')" style="background:#dc3545; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✕</button>
+                                                                                            </div>
+                                                                                            `;
                         list.appendChild(div);
                     });
                 });
@@ -6910,19 +6910,19 @@
                 : `<div class="user-item-avatar" style="background:#21232b;display:flex;align-items:center;justify-content:center;color:#8e8e93"><svg viewBox="0 0 24 24" width="55%" height="55%" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`;
 
             return `
-                                                                                        ${avatarHtml}
-                                                                                        <div class="user-name">${fName}</div>
-                                                                                        <div class="last-msg-row">
-                                                                                        <span class="last-msg" id="last-${chatId}">...</span>
-                                                                                        </div>
-                                                                                        <div class="meta-column">
-                                                                                        <span class="last-msg-date" id="date-${chatId}"></span>
-                                                                                        <div class="meta-bottom-row">
-                                                                                        <span id="status-${chatId}" class="list-ticks"></span>
-                                                                                        <div class="badge-count hidden" id="badge-${chatId}">0</div>
-                                                                                        </div>
-                                                                                        </div>
-                                                                                        `;
+                                                                                            ${avatarHtml}
+                                                                                            <div class="user-name">${fName}</div>
+                                                                                            <div class="last-msg-row">
+                                                                                            <span class="last-msg" id="last-${chatId}">...</span>
+                                                                                            </div>
+                                                                                            <div class="meta-column">
+                                                                                            <span class="last-msg-date" id="date-${chatId}"></span>
+                                                                                            <div class="meta-bottom-row">
+                                                                                            <span id="status-${chatId}" class="list-ticks"></span>
+                                                                                            <div class="badge-count hidden" id="badge-${chatId}">0</div>
+                                                                                            </div>
+                                                                                            </div>
+                                                                                            `;
         }
 
         function loadData() {
@@ -7046,19 +7046,19 @@
                             : `<div class="user-item-avatar" style="background:#21232b;display:flex;align-items:center;justify-content:center;color:#8e8e93">${isBot ? '🤖' : '<svg viewBox="0 0 24 24" width="55%" height="55%" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'}</div>`;
 
                         div.innerHTML = `
-                                                        ${avatarHtml}
-                                                        <div class="user-name">${fName}</div>
-                                                        <div class="last-msg-row">
-                                                            <span class="last-msg" id="last-${chatId}">...</span>
-                                                        </div>
-                                                        <div class="meta-column">
-                                                            <span class="last-msg-date" id="date-${chatId}"></span>
-                                                            <div class="meta-bottom-row">
-                                                                <span id="status-${chatId}" class="list-ticks"></span>
-                                                                <div class="badge-count hidden" id="badge-${chatId}">0</div>
+                                                            ${avatarHtml}
+                                                            <div class="user-name">${fName}</div>
+                                                            <div class="last-msg-row">
+                                                                <span class="last-msg" id="last-${chatId}">...</span>
                                                             </div>
-                                                        </div>
-                                                    `;
+                                                            <div class="meta-column">
+                                                                <span class="last-msg-date" id="date-${chatId}"></span>
+                                                                <div class="meta-bottom-row">
+                                                                    <span id="status-${chatId}" class="list-ticks"></span>
+                                                                    <div class="badge-count hidden" id="badge-${chatId}">0</div>
+                                                                </div>
+                                                            </div>
+                                                        `;
 
                         if (isNew) {
                             targetList.appendChild(div); // Добавляем строго в нужную папку!
@@ -7257,6 +7257,7 @@
                         return timeA - timeB;
                     });
 
+                    // ... (начало allDocs.forEach внутри loadMessages) ...
                     allDocs.forEach(doc => {
                         const msgId = doc.id;
                         const rawData = doc.data();
@@ -7268,7 +7269,6 @@
                         }
 
                         const m = { ...rawData };
-                        m.txt = decryptText(rawData.txt, currentChatId);
                         const msgType = m.type || 'text';
                         const tsMillis = m.ts ? m.ts.toMillis() : Date.now();
                         const dateStr = getChatSeparatorDate(tsMillis);
@@ -7304,7 +7304,57 @@
                                 openContextMenu(e, msgId, m.from === currentUser.uid);
                             };
 
+                            // --- ИСПРАВЛЕННЫЙ БЛОК АССИНХРОННОГО РЕНДЕРА ---
+
+                            // 1. Рисуем "скелет" сообщения СРАЗУ, чтобы не было дерганий
+                            // Вместо реального текста кладем заглушку.
+                            // Заметь: m.txt сейчас зашифрован.
+                            m.txt = "..."; // Заглушка
+                            div.innerHTML = buildMessageHTML(m, msgId, msgType);
                             list.appendChild(div);
+
+                            // 2. Функция, которая точечно обновляет текст, не трогая весь HTML
+                            const updateTextInDiv = () => {
+                                const textEl = div.querySelector('.msg-text');
+                                if (!textEl && msgType !== 'call') return; // Если это просто картинка, текста нет
+
+                                const decrypted = decryptText(rawData.txt, currentChatId);
+
+                                if (msgType === 'call') {
+                                    // Для звонков перерисовываем весь блок, так как там сложная верстка
+                                    m.txt = decrypted;
+                                    div.innerHTML = buildMessageHTML(m, msgId, msgType);
+                                } else if (msgType === 'text') {
+                                    // Точечно обновляем только текст!
+                                    let formattedText = decrypted.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" class="chat-link" style="color:#ffffff;text-decoration:underline;">$1</a>');
+                                    let finalContent = formattedText;
+
+                                    if (typeof isChatInitialLoad !== 'undefined' && !isChatInitialLoad && !m.sys && !decrypted.includes('http')) {
+                                        finalContent = applyPremiumTextEffect(decrypted);
+                                    }
+
+                                    const safeHtml = (typeof DOMPurify !== 'undefined')
+                                        ? DOMPurify.sanitize(finalContent, { ALLOWED_TAGS: ['a', 'span'], ALLOWED_ATTR: ['href', 'style', 'class'] })
+                                        : finalContent;
+
+                                    if (textEl) textEl.innerHTML = safeHtml;
+
+                                    // Добавляем перевод, если нужно
+                                    if (typeof isAutoTranslate !== 'undefined' && isAutoTranslate && m.from !== currentUser.uid && !m.sys) {
+                                        appendTranslation(div, decrypted, msgId);
+                                    }
+                                }
+                            };
+
+                            // 3. ПРОВЕРКА КЛЮЧА: 
+                            if (sessionKeys[currentChatId]) {
+                                // Если ключ УЖЕ загружен, расшифровываем мгновенно (избавляет от "вечных точек")
+                                updateTextInDiv();
+                            } else {
+                                // Если ключа еще нет, ждем события от fetchChatKey
+                                window.addEventListener('keyReady_' + currentChatId, updateTextInDiv, { once: true });
+                            }
+                            // ------------------------------------------------
 
                             if (!isChatInitialLoad && m.from !== currentUser.uid) {
                                 try {
@@ -7312,18 +7362,14 @@
                                     if (typeof window.TitleNotifier !== 'undefined') TitleNotifier.onNewMessage();
                                 } catch (e) { }
                             }
+                        } else {
+                            // Если сообщение уже есть в DOM, просто обновляем его статусы
+                            // (Чтобы не перерисовывать его и не ломать скролл)
                         }
 
                         div.setAttribute('data-datestr', dateStr);
                         div.setAttribute('data-rawdate', rawDate);
-                        div.setAttribute('data-ts', tsMillis); // ТАЙМСТЕМП ДЛЯ СКАНЕРА
-
-                        const newHtml = buildMessageHTML(m, msgId, msgType);
-                        if (div.innerHTML !== newHtml) div.innerHTML = newHtml;
-
-                        if (typeof isAutoTranslate !== 'undefined' && isAutoTranslate && m.from !== currentUser.uid && msgType === 'text' && !m.sys) {
-                            appendTranslation(div, m.txt, msgId);
-                        }
+                        div.setAttribute('data-ts', tsMillis);
 
                         // --- ОТДАЕМ НЕПРОЧИТАННОЕ СКАНЕРУ ЭКРАНА ---
                         if (m.from !== currentUser.uid && !m.read && tsMillis > window.myReadTs) {
@@ -7331,6 +7377,7 @@
                             window.chatObserver.observe(div);
                         }
                     });
+                    // ... (конец allDocs.forEach) ...
 
                     updateDateSeparators();
                     updateScrollBadge();
@@ -7439,20 +7486,20 @@
             let metaHtml = '';
             if (!m.sys && msgType !== 'call') {
                 metaHtml = `
-                            <span class="msg-meta">
-                                ${m.edited ? '<span style="font-size: 11px; color: rgba(255,255,255,0.8); margin-right: 5px;">изм.</span>' : ''}
-                                <span class="msg-time">${timeStr}</span>
-                                ${m.from === currentUser.uid ? `<span class="msg-ticks">${ticksHtml}</span>` : ''}
-                            </span>`;
+                                <span class="msg-meta">
+                                    ${m.edited ? '<span style="font-size: 11px; color: rgba(255,255,255,0.8); margin-right: 5px;">изм.</span>' : ''}
+                                    <span class="msg-time">${timeStr}</span>
+                                    ${m.from === currentUser.uid ? `<span class="msg-ticks">${ticksHtml}</span>` : ''}
+                                </span>`;
             }
 
             // 5. Цитата (Reply)
             if (m.replyTo) {
                 contentHtml += `
-                            <div class="msg-reply-quote" onclick="scrollToMsg('${m.replyTo.id}')">
-                                <div class="msg-reply-name">${m.replyTo.name}</div>
-                                <div class="msg-reply-text">${m.replyTo.text}</div>
-                            </div>`;
+                                <div class="msg-reply-quote" onclick="scrollToMsg('${m.replyTo.id}')">
+                                    <div class="msg-reply-name">${m.replyTo.name}</div>
+                                    <div class="msg-reply-text">${m.replyTo.text}</div>
+                                </div>`;
             }
 
             // 6. Основной контент (Текст, Картинка или Звонок)
@@ -7499,15 +7546,15 @@
                 }
 
                 contentHtml += `
-                            <div class="chat-call-card" onclick="startCall(); event.stopPropagation();" title="Перезвонить">
-                                <div class="call-icon-wrapper">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                </div>
-                                <div class="call-info">
-                                    <div class="call-title">${titleText}</div>
-                                    <div class="call-time" style="color: ${arrowColor === '#ff595a' ? '#ff595a' : '#aaa'};">${arrowHtml}${timeStr}${durationDisplay}</div>
-                                </div>
-                            </div>`;
+                                <div class="chat-call-card" onclick="startCall(); event.stopPropagation();" title="Перезвонить">
+                                    <div class="call-icon-wrapper">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    </div>
+                                    <div class="call-info">
+                                        <div class="call-title">${titleText}</div>
+                                        <div class="call-time" style="color: ${arrowColor === '#ff595a' ? '#ff595a' : '#aaa'};">${arrowHtml}${timeStr}${durationDisplay}</div>
+                                    </div>
+                                </div>`;
             } else {
                 let formattedText = m.txt.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" class="chat-link" style="color:#ffffff;text-decoration:underline;">$1</a>');
                 let finalContent = formattedText;
@@ -7562,10 +7609,10 @@
                         : `<span style="font-size: 16px; margin: 0 2px;">${emojiId}</span>`;
 
                     reactionsHtml += `
-                                <div class="${classStr}" onclick="event.stopPropagation(); toggleReactionDirect('${msgId}', '${emojiId}')">
-                                    ${reactionContent}
-                                    ${count > 1 ? `<span class="reaction-count">${count}</span>` : ''}
-                                </div>`;
+                                    <div class="${classStr}" onclick="event.stopPropagation(); toggleReactionDirect('${msgId}', '${emojiId}')">
+                                        ${reactionContent}
+                                        ${count > 1 ? `<span class="reaction-count">${count}</span>` : ''}
+                                    </div>`;
                 });
                 reactionsHtml += '</div>';
 
@@ -10291,17 +10338,17 @@
 
             // UI прогресс-бара (используется и для фото, и для файлов)
             const progressHtml = `
-                            <div class="upload-progress-container">
-                                <div class="upload-progress-circle" onclick="cancelUpload('${tempId}')" title="Отменить">
-                                    <svg class="upload-progress-svg" viewBox="0 0 50 50">
-                                        <circle class="upload-progress-circle-bg" cx="25" cy="25" r="21.5"></circle>
-                                        <circle class="upload-progress-circle-value" id="progress-val-${tempId}" cx="25" cy="25" r="21.5"></circle>
-                                    </svg>
-                                    <svg class="upload-cancel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                <div class="upload-progress-container">
+                                    <div class="upload-progress-circle" onclick="cancelUpload('${tempId}')" title="Отменить">
+                                        <svg class="upload-progress-svg" viewBox="0 0 50 50">
+                                            <circle class="upload-progress-circle-bg" cx="25" cy="25" r="21.5"></circle>
+                                            <circle class="upload-progress-circle-value" id="progress-val-${tempId}" cx="25" cy="25" r="21.5"></circle>
+                                        </svg>
+                                        <svg class="upload-cancel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </div>
+                                    <div class="upload-progress-text" id="progress-txt-${tempId}">0.0 / ${totalMb} МБ</div>
                                 </div>
-                                <div class="upload-progress-text" id="progress-txt-${tempId}">0.0 / ${totalMb} МБ</div>
-                            </div>
-                        `;
+                            `;
 
             // Если это картинка
             if (file.type.startsWith('image/')) {
@@ -10309,22 +10356,22 @@
                 const url = URL.createObjectURL(file);
 
                 contentHtml = `
-                                <img src="${url}" class="chat-media-img loading-overlay" onload="scrollToBottom()" style="filter: blur(4px) brightness(0.6);">
-                                ${progressHtml}
-                            `;
+                                    <img src="${url}" class="chat-media-img loading-overlay" onload="scrollToBottom()" style="filter: blur(4px) brightness(0.6);">
+                                    ${progressHtml}
+                                `;
             }
             // Если это документ
             else {
                 div.className = 'msg msg-me';
                 contentHtml = `
-                                <div class="chat-file-card" style="opacity: 0.6; position: relative; overflow: hidden;">
-                                    <div class="file-icon" style="opacity: 0.2;">📄</div>
-                                    <div class="file-info" style="opacity: 0.2;">
-                                        <div class="file-name">${file.name}</div>
-                                        <div class="file-action">Загрузка...</div>
-                                    </div>
-                                    ${progressHtml}
-                                </div>`;
+                                    <div class="chat-file-card" style="opacity: 0.6; position: relative; overflow: hidden;">
+                                        <div class="file-icon" style="opacity: 0.2;">📄</div>
+                                        <div class="file-info" style="opacity: 0.2;">
+                                            <div class="file-name">${file.name}</div>
+                                            <div class="file-action">Загрузка...</div>
+                                        </div>
+                                        ${progressHtml}
+                                    </div>`;
             }
 
             div.innerHTML = contentHtml;
@@ -11830,14 +11877,14 @@
                     div.className = 'search-msg-item';
                     div.id = 'search-item-' + index;
                     div.innerHTML = `
-                                                                                                    <div class="search-msg-content">
-                                                                                                        <div class="search-msg-header">
-                                                                                                            <span class="search-msg-name">${res.name}</span>
-                                                                                                            <span class="search-msg-time">${res.time}</span>
+                                                                                                        <div class="search-msg-content">
+                                                                                                            <div class="search-msg-header">
+                                                                                                                <span class="search-msg-name">${res.name}</span>
+                                                                                                                <span class="search-msg-time">${res.time}</span>
+                                                                                                            </div>
+                                                                                                            <div class="search-msg-text">${res.text}</div>
                                                                                                         </div>
-                                                                                                        <div class="search-msg-text">${res.text}</div>
-                                                                                                    </div>
-                                                                                                `;
+                                                                                                    `;
                     div.onclick = () => {
                         chatSearchCurrentIndex = index;
                         jumpToMessageAndCloseDropdown();
@@ -13162,26 +13209,26 @@
                 container.innerHTML = '';
                 if (snap.empty) {
                     container.innerHTML = `
-                                                    <div style="text-align:center; margin-top: 60px;">
-                                                        <div style="font-size: 50px; margin-bottom: 15px;">🤖</div>
-                                                        <h3 style="color:white; margin-bottom: 5px;">У вас пока нет ботов</h3>
-                                                        <button onclick="openBotEditor(null)" style="background:#736AF0; color:white; border:none; padding:12px 25px; border-radius:20px; font-weight:bold; font-size:15px; cursor:pointer; margin-top: 15px;">Создать бота</button>
-                                                    </div>`;
+                                                        <div style="text-align:center; margin-top: 60px;">
+                                                            <div style="font-size: 50px; margin-bottom: 15px;">🤖</div>
+                                                            <h3 style="color:white; margin-bottom: 5px;">У вас пока нет ботов</h3>
+                                                            <button onclick="openBotEditor(null)" style="background:#736AF0; color:white; border:none; padding:12px 25px; border-radius:20px; font-weight:bold; font-size:15px; cursor:pointer; margin-top: 15px;">Создать бота</button>
+                                                        </div>`;
                     return;
                 }
                 snap.forEach(doc => {
                     const bot = doc.data();
                     container.innerHTML += `
-                                                    <div class="premium-section" style="margin: 0 0 15px 0; background: #1c1c1e;">
-                                                        <div class="premium-item" onclick="openBotEditor('${doc.id}', '${bot.botToken}')" style="border:none;">
-                                                            <div class="premium-item-icon" style="background:#2b2d31; font-size:20px;">🤖</div>
-                                                            <div class="premium-item-content">
-                                                                <div class="premium-item-value">${bot.name}</div>
-                                                                <div class="premium-item-label">@${bot.username}</div>
+                                                        <div class="premium-section" style="margin: 0 0 15px 0; background: #1c1c1e;">
+                                                            <div class="premium-item" onclick="openBotEditor('${doc.id}', '${bot.botToken}')" style="border:none;">
+                                                                <div class="premium-item-icon" style="background:#2b2d31; font-size:20px;">🤖</div>
+                                                                <div class="premium-item-content">
+                                                                    <div class="premium-item-value">${bot.name}</div>
+                                                                    <div class="premium-item-label">@${bot.username}</div>
+                                                                </div>
+                                                                <div style="color: #736AF0; font-size:14px; font-weight:bold;">Токен</div>
                                                             </div>
-                                                            <div style="color: #736AF0; font-size:14px; font-weight:bold;">Токен</div>
-                                                        </div>
-                                                    </div>`;
+                                                        </div>`;
                 });
             } catch (e) { }
         }
