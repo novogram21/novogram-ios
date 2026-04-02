@@ -5500,6 +5500,14 @@
         const APP_SECRET_KEY = "JH54jnbdfkjs297615109dxc1kDmnsg_df1jksHnh1Lhsc";
         const TURN_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfoDAYY2otmNxEQ6tsrWLekLwthAPxnYDIW6HRUrA263qQgAYDDHPeQq7-Km_PcpI/exec";
 
+        // Фикс аудио-сессии для iOS (Capacitor/WebView)
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            if (navigator.audioSession) {
+                // Устанавливаем режим "play-and-record", который открывает доступ к разговорному динамику
+                navigator.audioSession.type = 'play-and-record';
+            }
+        }
+
         const APP_START_TIME = Date.now();
 
         function playNotificationSound(type) {
@@ -5928,6 +5936,13 @@
         }
         function stopAllTones() {
             if (toneTimer) { clearInterval(toneTimer); toneTimer = null; }
+
+            // 🔥 ПРЕМИУМ ФИКС iOS: Отключаем Web Audio API во время разговора!
+            // Если этого не сделать, iOS ломает маршрутизацию и пускает голос из двух динамиков.
+            // Приостановка контекста заставляет систему перевести звук строго в разговорный динамик (earpiece).
+            if (typeof audioCtx !== 'undefined' && audioCtx && audioCtx.state !== 'closed') {
+                audioCtx.suspend().catch(e => console.log("AudioCtx suspend error:", e));
+            }
         }
         function formatLastSeen(timestamp) {
             if (!timestamp) return "был давно";
@@ -9910,26 +9925,21 @@
         }
         function updateCallControlsVisibility() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isApp = (window.chrome && window.chrome.webview) || navigator.userAgent.includes('wv');
 
             const btnScr = document.getElementById('btnScr');
             const btnSpeaker = document.getElementById('btnSpeaker');
             const btnFlip = document.getElementById('btnFlip');
 
             if (!isMobile) {
-                // 1. НА КОМПЬЮТЕРЕ: Показываем "Экран", прячем "Динамик" и "Смену камеры"
+                // НА КОМПЬЮТЕРЕ: Показываем "Экран", прячем "Динамик" и "Смену камеры"
                 if (btnScr) btnScr.style.display = 'flex';
                 if (btnSpeaker) btnSpeaker.style.display = 'none';
                 if (btnFlip) btnFlip.style.display = 'none';
-            } else if (isMobile && isApp) {
-                // 2. В МОБИЛЬНОМ ПРИЛОЖЕНИИ (MAUI): Прячем "Экран", показываем "Динамик" и "Камеру"
+            } else {
+                // 🔥 ФИКС ДЛЯ iOS: Убрана жесткая проверка isApp. 
+                // Теперь на ЛЮБОМ телефоне кнопка динамика и камеры ВСЕГДА отображается.
                 if (btnScr) btnScr.style.display = 'none';
                 if (btnSpeaker) btnSpeaker.style.display = 'flex';
-                if (btnFlip) btnFlip.style.display = 'flex';
-            } else {
-                // 3. В МОБИЛЬНОМ БРАУЗЕРЕ (Safari/Chrome): Прячем "Экран" и "Динамик", оставляем только "Камеру"
-                if (btnScr) btnScr.style.display = 'none';
-                if (btnSpeaker) btnSpeaker.style.display = 'none';
                 if (btnFlip) btnFlip.style.display = 'flex';
             }
         }
@@ -12064,8 +12074,12 @@
                 btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
                 btn.classList.add('muted-state');
             }
+            // Принудительно выставляем режим голоса для iOS
+            if (navigator.audioSession) {
+                navigator.audioSession.type = 'play-and-record';
+                navigator.audioSession.setMode('voice-chat');
+            }
             if (window.mauiInterop) window.mauiInterop.postMessage("audio_ear");
-            else if (window.chrome && window.chrome.webview) window.chrome.webview.postMessage("audio_ear");
         }
 
         // 2. Функция переключения
@@ -12077,21 +12091,30 @@
             const iconEar = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
 
             if (isEarpiece) {
+                // Включаем "В УХО"
                 btn.innerHTML = iconEar;
                 btn.classList.add('muted-state');
 
-                if (window.mauiInterop) {
-                    window.mauiInterop.postMessage("audio_ear");
-                    window.mauiInterop.postMessage("enable_proximity"); // Вернули к уху - включили датчик
+                if (navigator.audioSession) {
+                    // 'none' заставляет iOS вернуть звук в разговорный динамик
+                    navigator.audioSession.setMode('voice-chat');
+                    // Сбрасываем переопределение на динамик
+                    if (typeof AudioSession !== 'undefined') AudioSession.setCategory('PlayAndRecord', ['AllowBluetooth', 'DefaultToReceiver']);
                 }
             } else {
+                // Включаем "ГРОМКАЯ СВЯЗЬ"
                 btn.innerHTML = iconLoud;
                 btn.classList.remove('muted-state');
 
-                if (window.mauiInterop) {
-                    window.mauiInterop.postMessage("audio_loud");
-                    window.mauiInterop.postMessage("disable_proximity"); // Громкая связь - выключили датчик
+                if (navigator.audioSession) {
+                    // Режим видеочата принудительно включает внешние динамики
+                    navigator.audioSession.setMode('video-chat');
                 }
+            }
+
+            // Сохраняем совместимость с Android версией, если она у тебя тоже есть
+            if (window.mauiInterop) {
+                window.mauiInterop.postMessage(isEarpiece ? "audio_ear" : "audio_loud");
             }
         }
 
