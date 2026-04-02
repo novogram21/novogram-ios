@@ -8593,6 +8593,7 @@
                 });
 
             } catch (err) {
+                alert("Ошибка звонка: " + err.name + " | " + err.message);
                 console.error("Ошибка начала звонка:", err);
                 endCall(true);
             }
@@ -8710,6 +8711,7 @@
                 updateCallStatus("Обмен шифрованием..."); // Тот, кто берет трубку, тоже видит этот статус
 
             } catch (e) {
+                alert("Ошибка ответа: " + e.name + " | " + e.message);
                 console.error("Ошибка при ответе:", e);
                 endCall(true);
             }

@@ -47,5 +47,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+
+<key>NSCameraUsageDescription</key>
+<string>Разрешите Novogram использовать камеру для видеозвонков.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Разрешите Novogram использовать микрофон для звонков.</string>
 </dict>
 </plist>
