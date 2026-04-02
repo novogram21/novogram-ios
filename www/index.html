@@ -4759,7 +4759,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script src="capacitor.js"></script>
 
 </head>
 
@@ -5809,13 +5808,13 @@
             const actionIcon = (chatExists || isBot) ? '💬' : '➕';
 
             div.innerHTML = `
-                                                ${avatarHtml}
-                                                <div class="search-info" style="flex:1; overflow:hidden; margin-left: 10px;">
-                                                    <div class="search-name" style="font-weight:bold; color:white; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${fullName}</div>
-                                                    <div class="search-sub" style="font-size:13px; color:#888;">${user.username ? '@' + user.username : 'ID пользователя'}</div>
-                                                </div>
-                                                <div class="search-action" style="color:#007bff; font-size:20px;">${actionIcon}</div>
-                                            `;
+                                            ${avatarHtml}
+                                            <div class="search-info" style="flex:1; overflow:hidden; margin-left: 10px;">
+                                                <div class="search-name" style="font-weight:bold; color:white; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${fullName}</div>
+                                                <div class="search-sub" style="font-size:13px; color:#888;">${user.username ? '@' + user.username : 'ID пользователя'}</div>
+                                            </div>
+                                            <div class="search-action" style="color:#007bff; font-size:20px;">${actionIcon}</div>
+                                        `;
 
             div.onclick = async () => {
                 if (chatExists) {
@@ -6277,16 +6276,6 @@
                     loadData();
                     listenForIncomingCalls();
                     loadTgId();
-
-                    if (window.cordova && cordova.plugins && cordova.plugins.diagnostic) {
-                        cordova.plugins.diagnostic.requestMicrophoneAuthorization(function (status) {
-                            console.log("Микрофон при входе: " + status);
-                        });
-                        cordova.plugins.diagnostic.requestCameraAuthorization(function (status) {
-                            console.log("Камера при входе: " + status);
-                        });
-                    }
-
                     setTimeout(() => {
                         handleHashChange();
                         // Проверяем, не зашли ли мы в приложение по клику на Push-уведомление
@@ -6392,29 +6381,20 @@
             const surname = document.getElementById('regSurname').value.trim();
             const username = document.getElementById('regUsername').value.trim();
             if (!name || !username) return;
-
             db.collection('users').doc(currentUser.uid).set({
                 name: name,
                 surname: surname,
                 username: username,
-                email: currentUser.email,
+                email: currentUser.email, // Обновляем на всякий случай
                 lastSeen: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                // --- ВОТ СЮДА ВСТАВЛЯЕМ ЗАПРОС ПРАВ ---
-                if (window.cordova && cordova.plugins && cordova.plugins.diagnostic) {
-                    cordova.plugins.diagnostic.requestMicrophoneAuthorization(function (status) {
-                        console.log("Микрофон: " + status);
-                    });
-                    cordova.plugins.diagnostic.requestCameraAuthorization(function (status) {
-                        console.log("Камера: " + status);
-                    });
-                }
-                // --------------------------------------
-
+                // Успех -> Перезагружаем страницу или просто скрываем окно
+                // Лучше просто скрыть окно и запустить логику, как в onAuthStateChanged
                 document.getElementById('authScreen').classList.add('hidden');
                 loadData();
                 listenForIncomingCalls();
                 loadTgId();
+
             });
         }
 
@@ -6616,16 +6596,16 @@
                         // Аватарка (заглушка или можно подгрузить реальную)
                         const avatar = '<div class="user-item-avatar" style="background:#21232b;display:flex;align-items:center;justify-content:center;color:#8e8e93"><svg viewBox="0 0 24 24" width="55%" height="55%" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
                         div.innerHTML = `
-                                                                                            ${avatar}
-                                                                                            <div class="user-name" style="grid-row: 1/span 2; align-self:center;">
-                                                                                            ${data.fromUsername ? '@' + data.fromUsername : 'Пользователь'}
-                                                                                            <div style="font-size:12px; color:#888; font-weight:normal;">Хочет добавить вас в друзья</div>
-                                                                                            </div>
-                                                                                            <div style="grid-column:3; grid-row:1/span 2; display:flex; gap:10px;">
-                                                                                            <button onclick="accept('${doc.id}', '${data.from}', '${data.fromEmail}')" style="background:#28a745; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✓</button>
-                                                                                            <button onclick="reject('${doc.id}')" style="background:#dc3545; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✕</button>
-                                                                                            </div>
-                                                                                            `;
+                                                                                        ${avatar}
+                                                                                        <div class="user-name" style="grid-row: 1/span 2; align-self:center;">
+                                                                                        ${data.fromUsername ? '@' + data.fromUsername : 'Пользователь'}
+                                                                                        <div style="font-size:12px; color:#888; font-weight:normal;">Хочет добавить вас в друзья</div>
+                                                                                        </div>
+                                                                                        <div style="grid-column:3; grid-row:1/span 2; display:flex; gap:10px;">
+                                                                                        <button onclick="accept('${doc.id}', '${data.from}', '${data.fromEmail}')" style="background:#28a745; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✓</button>
+                                                                                        <button onclick="reject('${doc.id}')" style="background:#dc3545; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">✕</button>
+                                                                                        </div>
+                                                                                        `;
                         list.appendChild(div);
                     });
                 });
@@ -6930,19 +6910,19 @@
                 : `<div class="user-item-avatar" style="background:#21232b;display:flex;align-items:center;justify-content:center;color:#8e8e93"><svg viewBox="0 0 24 24" width="55%" height="55%" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>`;
 
             return `
-                                                                                            ${avatarHtml}
-                                                                                            <div class="user-name">${fName}</div>
-                                                                                            <div class="last-msg-row">
-                                                                                            <span class="last-msg" id="last-${chatId}">...</span>
-                                                                                            </div>
-                                                                                            <div class="meta-column">
-                                                                                            <span class="last-msg-date" id="date-${chatId}"></span>
-                                                                                            <div class="meta-bottom-row">
-                                                                                            <span id="status-${chatId}" class="list-ticks"></span>
-                                                                                            <div class="badge-count hidden" id="badge-${chatId}">0</div>
-                                                                                            </div>
-                                                                                            </div>
-                                                                                            `;
+                                                                                        ${avatarHtml}
+                                                                                        <div class="user-name">${fName}</div>
+                                                                                        <div class="last-msg-row">
+                                                                                        <span class="last-msg" id="last-${chatId}">...</span>
+                                                                                        </div>
+                                                                                        <div class="meta-column">
+                                                                                        <span class="last-msg-date" id="date-${chatId}"></span>
+                                                                                        <div class="meta-bottom-row">
+                                                                                        <span id="status-${chatId}" class="list-ticks"></span>
+                                                                                        <div class="badge-count hidden" id="badge-${chatId}">0</div>
+                                                                                        </div>
+                                                                                        </div>
+                                                                                        `;
         }
 
         function loadData() {
@@ -7066,19 +7046,19 @@
                             : `<div class="user-item-avatar" style="background:#21232b;display:flex;align-items:center;justify-content:center;color:#8e8e93">${isBot ? '🤖' : '<svg viewBox="0 0 24 24" width="55%" height="55%" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'}</div>`;
 
                         div.innerHTML = `
-                                                            ${avatarHtml}
-                                                            <div class="user-name">${fName}</div>
-                                                            <div class="last-msg-row">
-                                                                <span class="last-msg" id="last-${chatId}">...</span>
+                                                        ${avatarHtml}
+                                                        <div class="user-name">${fName}</div>
+                                                        <div class="last-msg-row">
+                                                            <span class="last-msg" id="last-${chatId}">...</span>
+                                                        </div>
+                                                        <div class="meta-column">
+                                                            <span class="last-msg-date" id="date-${chatId}"></span>
+                                                            <div class="meta-bottom-row">
+                                                                <span id="status-${chatId}" class="list-ticks"></span>
+                                                                <div class="badge-count hidden" id="badge-${chatId}">0</div>
                                                             </div>
-                                                            <div class="meta-column">
-                                                                <span class="last-msg-date" id="date-${chatId}"></span>
-                                                                <div class="meta-bottom-row">
-                                                                    <span id="status-${chatId}" class="list-ticks"></span>
-                                                                    <div class="badge-count hidden" id="badge-${chatId}">0</div>
-                                                                </div>
-                                                            </div>
-                                                        `;
+                                                        </div>
+                                                    `;
 
                         if (isNew) {
                             targetList.appendChild(div); // Добавляем строго в нужную папку!
@@ -7459,20 +7439,20 @@
             let metaHtml = '';
             if (!m.sys && msgType !== 'call') {
                 metaHtml = `
-                                <span class="msg-meta">
-                                    ${m.edited ? '<span style="font-size: 11px; color: rgba(255,255,255,0.8); margin-right: 5px;">изм.</span>' : ''}
-                                    <span class="msg-time">${timeStr}</span>
-                                    ${m.from === currentUser.uid ? `<span class="msg-ticks">${ticksHtml}</span>` : ''}
-                                </span>`;
+                            <span class="msg-meta">
+                                ${m.edited ? '<span style="font-size: 11px; color: rgba(255,255,255,0.8); margin-right: 5px;">изм.</span>' : ''}
+                                <span class="msg-time">${timeStr}</span>
+                                ${m.from === currentUser.uid ? `<span class="msg-ticks">${ticksHtml}</span>` : ''}
+                            </span>`;
             }
 
             // 5. Цитата (Reply)
             if (m.replyTo) {
                 contentHtml += `
-                                <div class="msg-reply-quote" onclick="scrollToMsg('${m.replyTo.id}')">
-                                    <div class="msg-reply-name">${m.replyTo.name}</div>
-                                    <div class="msg-reply-text">${m.replyTo.text}</div>
-                                </div>`;
+                            <div class="msg-reply-quote" onclick="scrollToMsg('${m.replyTo.id}')">
+                                <div class="msg-reply-name">${m.replyTo.name}</div>
+                                <div class="msg-reply-text">${m.replyTo.text}</div>
+                            </div>`;
             }
 
             // 6. Основной контент (Текст, Картинка или Звонок)
@@ -7519,15 +7499,15 @@
                 }
 
                 contentHtml += `
-                                <div class="chat-call-card" onclick="startCall(); event.stopPropagation();" title="Перезвонить">
-                                    <div class="call-icon-wrapper">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                    </div>
-                                    <div class="call-info">
-                                        <div class="call-title">${titleText}</div>
-                                        <div class="call-time" style="color: ${arrowColor === '#ff595a' ? '#ff595a' : '#aaa'};">${arrowHtml}${timeStr}${durationDisplay}</div>
-                                    </div>
-                                </div>`;
+                            <div class="chat-call-card" onclick="startCall(); event.stopPropagation();" title="Перезвонить">
+                                <div class="call-icon-wrapper">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                </div>
+                                <div class="call-info">
+                                    <div class="call-title">${titleText}</div>
+                                    <div class="call-time" style="color: ${arrowColor === '#ff595a' ? '#ff595a' : '#aaa'};">${arrowHtml}${timeStr}${durationDisplay}</div>
+                                </div>
+                            </div>`;
             } else {
                 let formattedText = m.txt.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" class="chat-link" style="color:#ffffff;text-decoration:underline;">$1</a>');
                 let finalContent = formattedText;
@@ -7582,10 +7562,10 @@
                         : `<span style="font-size: 16px; margin: 0 2px;">${emojiId}</span>`;
 
                     reactionsHtml += `
-                                    <div class="${classStr}" onclick="event.stopPropagation(); toggleReactionDirect('${msgId}', '${emojiId}')">
-                                        ${reactionContent}
-                                        ${count > 1 ? `<span class="reaction-count">${count}</span>` : ''}
-                                    </div>`;
+                                <div class="${classStr}" onclick="event.stopPropagation(); toggleReactionDirect('${msgId}', '${emojiId}')">
+                                    ${reactionContent}
+                                    ${count > 1 ? `<span class="reaction-count">${count}</span>` : ''}
+                                </div>`;
                 });
                 reactionsHtml += '</div>';
 
@@ -8166,11 +8146,6 @@
                         document.getElementById('callStatusText').style.display = 'none';
                         document.getElementById('callTimer').style.display = 'block';
                         stopAllTones(); startTimer(); startPing();
-
-                        // МАГИЯ ДЛЯ iOS: Перехватываем звук сразу после успешного коннекта
-                        setTimeout(() => {
-                            if (isEarpiece) forceEarpiece();
-                        }, 500);
                     }
                 }
                 else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
@@ -8191,16 +8166,8 @@
                         document.body.appendChild(remoteAudio);
                     }
                     if (!remoteAudio.srcObject) remoteAudio.srcObject = new MediaStream();
-                    if (!remoteAudio.srcObject.getTracks().includes(e.track)) {
-                        remoteAudio.srcObject.addTrack(e.track);
-                    }
-
-                    remoteAudio.play().then(() => {
-                        // МАГИЯ ДЛЯ iOS: Как только звук пошел, жестко переводим его в ухо
-                        setTimeout(() => {
-                            if (isEarpiece) forceEarpiece();
-                        }, 300);
-                    }).catch(err => console.log("Ошибка аудио:", err));
+                    remoteAudio.srcObject.addTrack(e.track);
+                    remoteAudio.play().catch(err => console.log("Ошибка аудио:", err));
                 }
                 else if (e.track.kind === 'video') {
                     const remoteVid = document.getElementById('remoteVideo');
@@ -8214,11 +8181,7 @@
                         const stream = remoteVid.srcObject;
                         remoteVid.srcObject = null;
                         remoteVid.srcObject = stream;
-                        remoteVid.play().then(() => {
-                            setTimeout(() => {
-                                if (isEarpiece) forceEarpiece();
-                            }, 300);
-                        }).catch(err => console.log("Ошибка автозапуска:", err));
+                        remoteVid.play().catch(err => console.log("Ошибка автозапуска:", err));
                     };
 
                     remoteVid.play().catch(err => console.log("Ошибка старта видео:", err));
@@ -8377,7 +8340,6 @@
         }
         async function getMedia(requestVideo = false) {
             try {
-                // Запрашиваем строго то, что нужно прямо сейчас
                 const constraints = { audio: true, video: false };
                 if (requestVideo) {
                     constraints.video = {
@@ -8389,11 +8351,25 @@
 
                 localStream = await navigator.mediaDevices.getUserMedia(constraints);
 
+                let dummyAdded = false;
+                if (!requestVideo) {
+                    const dummyTrack = window.createDummyVideoTrack();
+                    if (dummyTrack) {
+                        localStream.addTrack(dummyTrack);
+                        dummyAdded = true;
+                    }
+                }
+
                 document.getElementById('localVideo').srcObject = localStream;
                 document.getElementById('localVideo').muted = true;
 
-                // Добавляем треки в звонок
+                // Добавляем все имеющиеся треки в звонок
                 localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+                // Магия для iPhone: если пустого кадра нет, но нам нужен канал для камеры в будущем
+                if (!requestVideo && !dummyAdded) {
+                    pc.addTransceiver('video', { direction: 'sendrecv', streams: [localStream] });
+                }
 
                 if (!requestVideo) {
                     updateCamBtnUI(false);
@@ -8402,12 +8378,11 @@
                     setLocalMirror(currentFacingMode);
                 }
 
-                // Переводим звук в ухо
                 setTimeout(forceEarpiece, 500);
 
             } catch (e) {
                 console.error("🚨 Ошибка медиа:", e);
-                throw e;
+                throw e; // Пробрасываем ошибку дальше
             }
         }
 
@@ -8763,7 +8738,15 @@
         async function toggleCamera() {
             if (!pc) return;
 
+            // На iPhone канал создается без физического трека, ищем его умнее:
             let videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+            if (!videoSender) {
+                const transceiver = pc.getTransceivers().find(t => t.receiver && t.receiver.track && t.receiver.track.kind === 'video');
+                if (transceiver) videoSender = transceiver.sender;
+            }
+            if (!videoSender) return;
+
+            const currentTrack = localStream.getVideoTracks()[0];
             const btnCam = document.getElementById('btnCam');
             const isCameraOn = !btnCam.classList.contains('muted-state');
 
@@ -8775,46 +8758,45 @@
                     });
                     const newTrack = stream.getVideoTracks()[0];
 
+                    if (currentTrack) {
+                        currentTrack.stop();
+                        localStream.removeTrack(currentTrack);
+                    }
+
                     localStream.addTrack(newTrack);
                     document.getElementById('localVideo').srcObject = localStream;
 
-                    if (videoSender) {
-                        await videoSender.replaceTrack(newTrack);
-                    } else {
-                        // Если канала не было, создаем его на лету
-                        pc.addTrack(newTrack, localStream);
-                        // Опционально: можно добавить логику renegotiation здесь
-                    }
+                    await videoSender.replaceTrack(newTrack);
 
                     if (currentCallId && currentUser) rtdb.ref(`call_sessions/${currentCallId}/video_update_${currentUser.uid}`).set(Date.now());
+                    if (window.mauiInterop) window.mauiInterop.postMessage("disable_proximity");
 
                     updateCamBtnUI(true);
                     setLocalMirror(currentFacingMode);
-
-                    // ВАЖНО: Раз включили видео, переводим звук на громкую связь!
-                    if (isEarpiece && window.AudioToggle) {
-                        toggleSpeaker();
-                    }
-
                 } catch (e) {
                     console.error("Ошибка камеры:", e);
                     showToast("Не удалось запустить камеру");
                 }
             } else {
                 // --- ВЫКЛЮЧАЕМ КАМЕРУ ---
-                const currentTrack = localStream.getVideoTracks()[0];
                 if (currentTrack) {
                     currentTrack.stop();
                     localStream.removeTrack(currentTrack);
                 }
 
-                // Просто убираем видео из трансляции (никаких черных квадратов)
-                if (videoSender) {
+                const dummyTrack = window.createDummyVideoTrack();
+                if (dummyTrack) {
+                    localStream.addTrack(dummyTrack);
+                    await videoSender.replaceTrack(dummyTrack);
+                } else {
+                    // На iPhone просто шлем null (убираем видео)
                     await videoSender.replaceTrack(null);
                 }
 
                 document.getElementById('localVideo').srcObject = localStream;
+
                 if (currentCallId && currentUser) rtdb.ref(`call_sessions/${currentCallId}/video_update_${currentUser.uid}`).set(Date.now());
+
                 updateCamBtnUI(false);
             }
         }
@@ -8909,6 +8891,7 @@
         }
 
         function stopScreen(sender) {
+            const dummyTrack = window.createDummyVideoTrack();
             const currentTrack = localStream.getVideoTracks()[0];
 
             if (currentTrack) {
@@ -8916,8 +8899,12 @@
                 localStream.removeTrack(currentTrack);
             }
 
-            // Убираем видео-трек
-            if (sender) sender.replaceTrack(null);
+            if (dummyTrack) {
+                localStream.addTrack(dummyTrack);
+                if (sender) sender.replaceTrack(dummyTrack);
+            } else {
+                if (sender) sender.replaceTrack(null);
+            }
 
             document.getElementById('localVideo').srcObject = localStream;
 
@@ -9090,13 +9077,6 @@
             }
         }
         function endCall(isInitiator = true, isRemote = false) {
-            if (window.AudioToggle) {
-                AudioToggle.setAudioMode(AudioToggle.SPEAKER); // Возвращаем обычный динамик для системных звуков
-            }
-            if (navigator.proximity) {
-                navigator.proximity.disableSensor(); // Отключаем гашение экрана
-            }
-
             // Выключаем датчик при завершении звонка
             if (window.mauiInterop) {
                 window.mauiInterop.postMessage("disable_proximity");
@@ -9888,20 +9868,26 @@
         }
         function updateCallControlsVisibility() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isApp = (window.chrome && window.chrome.webview) || navigator.userAgent.includes('wv');
 
             const btnScr = document.getElementById('btnScr');
             const btnSpeaker = document.getElementById('btnSpeaker');
             const btnFlip = document.getElementById('btnFlip');
 
             if (!isMobile) {
-                // НА КОМПЬЮТЕРЕ: Экран - ДА, Динамик - НЕТ
+                // 1. НА КОМПЬЮТЕРЕ: Показываем "Экран", прячем "Динамик" и "Смену камеры"
                 if (btnScr) btnScr.style.display = 'flex';
                 if (btnSpeaker) btnSpeaker.style.display = 'none';
                 if (btnFlip) btnFlip.style.display = 'none';
-            } else {
-                // НА МОБИЛЬНЫХ (и iPhone, и Android, и PWA): Динамик - ДА, Камера - ДА, Экран - НЕТ
+            } else if (isMobile && isApp) {
+                // 2. В МОБИЛЬНОМ ПРИЛОЖЕНИИ (MAUI): Прячем "Экран", показываем "Динамик" и "Камеру"
                 if (btnScr) btnScr.style.display = 'none';
                 if (btnSpeaker) btnSpeaker.style.display = 'flex';
+                if (btnFlip) btnFlip.style.display = 'flex';
+            } else {
+                // 3. В МОБИЛЬНОМ БРАУЗЕРЕ (Safari/Chrome): Прячем "Экран" и "Динамик", оставляем только "Камеру"
+                if (btnScr) btnScr.style.display = 'none';
+                if (btnSpeaker) btnSpeaker.style.display = 'none';
                 if (btnFlip) btnFlip.style.display = 'flex';
             }
         }
@@ -10305,17 +10291,17 @@
 
             // UI прогресс-бара (используется и для фото, и для файлов)
             const progressHtml = `
-                                <div class="upload-progress-container">
-                                    <div class="upload-progress-circle" onclick="cancelUpload('${tempId}')" title="Отменить">
-                                        <svg class="upload-progress-svg" viewBox="0 0 50 50">
-                                            <circle class="upload-progress-circle-bg" cx="25" cy="25" r="21.5"></circle>
-                                            <circle class="upload-progress-circle-value" id="progress-val-${tempId}" cx="25" cy="25" r="21.5"></circle>
-                                        </svg>
-                                        <svg class="upload-cancel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                    </div>
-                                    <div class="upload-progress-text" id="progress-txt-${tempId}">0.0 / ${totalMb} МБ</div>
+                            <div class="upload-progress-container">
+                                <div class="upload-progress-circle" onclick="cancelUpload('${tempId}')" title="Отменить">
+                                    <svg class="upload-progress-svg" viewBox="0 0 50 50">
+                                        <circle class="upload-progress-circle-bg" cx="25" cy="25" r="21.5"></circle>
+                                        <circle class="upload-progress-circle-value" id="progress-val-${tempId}" cx="25" cy="25" r="21.5"></circle>
+                                    </svg>
+                                    <svg class="upload-cancel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                 </div>
-                            `;
+                                <div class="upload-progress-text" id="progress-txt-${tempId}">0.0 / ${totalMb} МБ</div>
+                            </div>
+                        `;
 
             // Если это картинка
             if (file.type.startsWith('image/')) {
@@ -10323,22 +10309,22 @@
                 const url = URL.createObjectURL(file);
 
                 contentHtml = `
-                                    <img src="${url}" class="chat-media-img loading-overlay" onload="scrollToBottom()" style="filter: blur(4px) brightness(0.6);">
-                                    ${progressHtml}
-                                `;
+                                <img src="${url}" class="chat-media-img loading-overlay" onload="scrollToBottom()" style="filter: blur(4px) brightness(0.6);">
+                                ${progressHtml}
+                            `;
             }
             // Если это документ
             else {
                 div.className = 'msg msg-me';
                 contentHtml = `
-                                    <div class="chat-file-card" style="opacity: 0.6; position: relative; overflow: hidden;">
-                                        <div class="file-icon" style="opacity: 0.2;">📄</div>
-                                        <div class="file-info" style="opacity: 0.2;">
-                                            <div class="file-name">${file.name}</div>
-                                            <div class="file-action">Загрузка...</div>
-                                        </div>
-                                        ${progressHtml}
-                                    </div>`;
+                                <div class="chat-file-card" style="opacity: 0.6; position: relative; overflow: hidden;">
+                                    <div class="file-icon" style="opacity: 0.2;">📄</div>
+                                    <div class="file-info" style="opacity: 0.2;">
+                                        <div class="file-name">${file.name}</div>
+                                        <div class="file-action">Загрузка...</div>
+                                    </div>
+                                    ${progressHtml}
+                                </div>`;
             }
 
             div.innerHTML = contentHtml;
@@ -11844,14 +11830,14 @@
                     div.className = 'search-msg-item';
                     div.id = 'search-item-' + index;
                     div.innerHTML = `
-                                                                                                        <div class="search-msg-content">
-                                                                                                            <div class="search-msg-header">
-                                                                                                                <span class="search-msg-name">${res.name}</span>
-                                                                                                                <span class="search-msg-time">${res.time}</span>
-                                                                                                            </div>
-                                                                                                            <div class="search-msg-text">${res.text}</div>
+                                                                                                    <div class="search-msg-content">
+                                                                                                        <div class="search-msg-header">
+                                                                                                            <span class="search-msg-name">${res.name}</span>
+                                                                                                            <span class="search-msg-time">${res.time}</span>
                                                                                                         </div>
-                                                                                                    `;
+                                                                                                        <div class="search-msg-text">${res.text}</div>
+                                                                                                    </div>
+                                                                                                `;
                     div.onclick = () => {
                         chatSearchCurrentIndex = index;
                         jumpToMessageAndCloseDropdown();
@@ -12008,15 +11994,14 @@
 
             if (btn) {
                 btn.innerHTML = iconEar;
-                btn.classList.add('muted-state');
+                btn.classList.add('muted-state'); // Белый фон (означает, что динамик приложен к уху)
             }
 
-            // --- НОВЫЙ КОД ДЛЯ ПЛАГИНОВ ---
-            if (window.AudioToggle) {
-                AudioToggle.setAudioMode(AudioToggle.EARPIECE); // Переводим звук в ухо
-            }
-            if (navigator.proximity) {
-                navigator.proximity.enableSensor(); // Включаем датчик (гасим экран)
+            // Шлем команду в C# переключить на ухо при старте звонка
+            if (window.mauiInterop && window.mauiInterop.postMessage) {
+                window.mauiInterop.postMessage("audio_ear");
+            } else if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage("audio_ear");
             }
         }
 
@@ -12030,22 +12015,13 @@
             }
         }
 
-            function forceEarpiece() {
+        function forceEarpiece() {
             isEarpiece = true;
             const btn = document.getElementById('btnSpeaker');
             if (btn) {
                 btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
                 btn.classList.add('muted-state');
             }
-
-            // Агрессивный вызов нативных плагинов Capacitor/Cordova
-            if (window.AudioToggle) {
-                window.AudioToggle.setAudioMode(window.AudioToggle.EARPIECE);
-            }
-            if (navigator.proximity) {
-                navigator.proximity.enableSensor();
-            }
-
             if (window.mauiInterop) window.mauiInterop.postMessage("audio_ear");
             else if (window.chrome && window.chrome.webview) window.chrome.webview.postMessage("audio_ear");
         }
@@ -12061,13 +12037,19 @@
             if (isEarpiece) {
                 btn.innerHTML = iconEar;
                 btn.classList.add('muted-state');
-                if (window.AudioToggle) AudioToggle.setAudioMode(AudioToggle.EARPIECE);
-                if (navigator.proximity) navigator.proximity.enableSensor();
+
+                if (window.mauiInterop) {
+                    window.mauiInterop.postMessage("audio_ear");
+                    window.mauiInterop.postMessage("enable_proximity"); // Вернули к уху - включили датчик
+                }
             } else {
                 btn.innerHTML = iconLoud;
                 btn.classList.remove('muted-state');
-                if (window.AudioToggle) AudioToggle.setAudioMode(AudioToggle.SPEAKER);
-                if (navigator.proximity) navigator.proximity.disableSensor();
+
+                if (window.mauiInterop) {
+                    window.mauiInterop.postMessage("audio_loud");
+                    window.mauiInterop.postMessage("disable_proximity"); // Громкая связь - выключили датчик
+                }
             }
         }
 
@@ -13180,26 +13162,26 @@
                 container.innerHTML = '';
                 if (snap.empty) {
                     container.innerHTML = `
-                                                        <div style="text-align:center; margin-top: 60px;">
-                                                            <div style="font-size: 50px; margin-bottom: 15px;">🤖</div>
-                                                            <h3 style="color:white; margin-bottom: 5px;">У вас пока нет ботов</h3>
-                                                            <button onclick="openBotEditor(null)" style="background:#736AF0; color:white; border:none; padding:12px 25px; border-radius:20px; font-weight:bold; font-size:15px; cursor:pointer; margin-top: 15px;">Создать бота</button>
-                                                        </div>`;
+                                                    <div style="text-align:center; margin-top: 60px;">
+                                                        <div style="font-size: 50px; margin-bottom: 15px;">🤖</div>
+                                                        <h3 style="color:white; margin-bottom: 5px;">У вас пока нет ботов</h3>
+                                                        <button onclick="openBotEditor(null)" style="background:#736AF0; color:white; border:none; padding:12px 25px; border-radius:20px; font-weight:bold; font-size:15px; cursor:pointer; margin-top: 15px;">Создать бота</button>
+                                                    </div>`;
                     return;
                 }
                 snap.forEach(doc => {
                     const bot = doc.data();
                     container.innerHTML += `
-                                                        <div class="premium-section" style="margin: 0 0 15px 0; background: #1c1c1e;">
-                                                            <div class="premium-item" onclick="openBotEditor('${doc.id}', '${bot.botToken}')" style="border:none;">
-                                                                <div class="premium-item-icon" style="background:#2b2d31; font-size:20px;">🤖</div>
-                                                                <div class="premium-item-content">
-                                                                    <div class="premium-item-value">${bot.name}</div>
-                                                                    <div class="premium-item-label">@${bot.username}</div>
-                                                                </div>
-                                                                <div style="color: #736AF0; font-size:14px; font-weight:bold;">Токен</div>
+                                                    <div class="premium-section" style="margin: 0 0 15px 0; background: #1c1c1e;">
+                                                        <div class="premium-item" onclick="openBotEditor('${doc.id}', '${bot.botToken}')" style="border:none;">
+                                                            <div class="premium-item-icon" style="background:#2b2d31; font-size:20px;">🤖</div>
+                                                            <div class="premium-item-content">
+                                                                <div class="premium-item-value">${bot.name}</div>
+                                                                <div class="premium-item-label">@${bot.username}</div>
                                                             </div>
-                                                        </div>`;
+                                                            <div style="color: #736AF0; font-size:14px; font-weight:bold;">Токен</div>
+                                                        </div>
+                                                    </div>`;
                 });
             } catch (e) { }
         }
@@ -14172,7 +14154,6 @@
             }
             return null; // На iPhone просто возвращаем null
         };
-
 
 
 
