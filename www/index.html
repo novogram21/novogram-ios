@@ -8357,6 +8357,7 @@
         }
         async function getMedia(requestVideo = false) {
             try {
+                // Запрашиваем строго то, что нужно прямо сейчас
                 const constraints = { audio: true, video: false };
                 if (requestVideo) {
                     constraints.video = {
@@ -8368,25 +8369,11 @@
 
                 localStream = await navigator.mediaDevices.getUserMedia(constraints);
 
-                let dummyAdded = false;
-                if (!requestVideo) {
-                    const dummyTrack = window.createDummyVideoTrack();
-                    if (dummyTrack) {
-                        localStream.addTrack(dummyTrack);
-                        dummyAdded = true;
-                    }
-                }
-
                 document.getElementById('localVideo').srcObject = localStream;
                 document.getElementById('localVideo').muted = true;
 
-                // Добавляем все имеющиеся треки в звонок
+                // Добавляем треки в звонок
                 localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-
-                // Магия для iPhone: если пустого кадра нет, но нам нужен канал для камеры в будущем
-                if (!requestVideo && !dummyAdded) {
-                    pc.addTransceiver('video', { direction: 'sendrecv', streams: [localStream] });
-                }
 
                 if (!requestVideo) {
                     updateCamBtnUI(false);
@@ -8395,11 +8382,12 @@
                     setLocalMirror(currentFacingMode);
                 }
 
+                // Переводим звук в ухо
                 setTimeout(forceEarpiece, 500);
 
             } catch (e) {
                 console.error("🚨 Ошибка медиа:", e);
-                throw e; // Пробрасываем ошибку дальше
+                throw e;
             }
         }
 
@@ -8755,15 +8743,7 @@
         async function toggleCamera() {
             if (!pc) return;
 
-            // На iPhone канал создается без физического трека, ищем его умнее:
             let videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-            if (!videoSender) {
-                const transceiver = pc.getTransceivers().find(t => t.receiver && t.receiver.track && t.receiver.track.kind === 'video');
-                if (transceiver) videoSender = transceiver.sender;
-            }
-            if (!videoSender) return;
-
-            const currentTrack = localStream.getVideoTracks()[0];
             const btnCam = document.getElementById('btnCam');
             const isCameraOn = !btnCam.classList.contains('muted-state');
 
@@ -8775,45 +8755,46 @@
                     });
                     const newTrack = stream.getVideoTracks()[0];
 
-                    if (currentTrack) {
-                        currentTrack.stop();
-                        localStream.removeTrack(currentTrack);
-                    }
-
                     localStream.addTrack(newTrack);
                     document.getElementById('localVideo').srcObject = localStream;
 
-                    await videoSender.replaceTrack(newTrack);
+                    if (videoSender) {
+                        await videoSender.replaceTrack(newTrack);
+                    } else {
+                        // Если канала не было, создаем его на лету
+                        pc.addTrack(newTrack, localStream);
+                        // Опционально: можно добавить логику renegotiation здесь
+                    }
 
                     if (currentCallId && currentUser) rtdb.ref(`call_sessions/${currentCallId}/video_update_${currentUser.uid}`).set(Date.now());
-                    if (window.mauiInterop) window.mauiInterop.postMessage("disable_proximity");
-
+                    
                     updateCamBtnUI(true);
                     setLocalMirror(currentFacingMode);
+                    
+                    // ВАЖНО: Раз включили видео, переводим звук на громкую связь!
+                    if (isEarpiece && window.AudioToggle) {
+                        toggleSpeaker();
+                    }
+
                 } catch (e) {
                     console.error("Ошибка камеры:", e);
                     showToast("Не удалось запустить камеру");
                 }
             } else {
                 // --- ВЫКЛЮЧАЕМ КАМЕРУ ---
+                const currentTrack = localStream.getVideoTracks()[0];
                 if (currentTrack) {
                     currentTrack.stop();
                     localStream.removeTrack(currentTrack);
                 }
 
-                const dummyTrack = window.createDummyVideoTrack();
-                if (dummyTrack) {
-                    localStream.addTrack(dummyTrack);
-                    await videoSender.replaceTrack(dummyTrack);
-                } else {
-                    // На iPhone просто шлем null (убираем видео)
+                // Просто убираем видео из трансляции (никаких черных квадратов)
+                if (videoSender) {
                     await videoSender.replaceTrack(null);
                 }
-
+                
                 document.getElementById('localVideo').srcObject = localStream;
-
                 if (currentCallId && currentUser) rtdb.ref(`call_sessions/${currentCallId}/video_update_${currentUser.uid}`).set(Date.now());
-
                 updateCamBtnUI(false);
             }
         }
@@ -8908,7 +8889,6 @@
         }
 
         function stopScreen(sender) {
-            const dummyTrack = window.createDummyVideoTrack();
             const currentTrack = localStream.getVideoTracks()[0];
 
             if (currentTrack) {
@@ -8916,13 +8896,9 @@
                 localStream.removeTrack(currentTrack);
             }
 
-            if (dummyTrack) {
-                localStream.addTrack(dummyTrack);
-                if (sender) sender.replaceTrack(dummyTrack);
-            } else {
-                if (sender) sender.replaceTrack(null);
-            }
-
+            // Убираем видео-трек
+            if (sender) sender.replaceTrack(null);
+            
             document.getElementById('localVideo').srcObject = localStream;
 
             const btn = document.getElementById('btnScr');
