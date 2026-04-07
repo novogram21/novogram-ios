@@ -59,5 +59,12 @@
         <string>voip</string>
     </array>
 
+<key>NSCameraUsageDescription</key>
+<string>Приложению нужен доступ к камере для отправки фотографий в чат.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Приложению нужен доступ к галерее для выбора фотографий.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Приложению нужен доступ для сохранения фотографий.</string>
+
 </dict>
 </plist>
