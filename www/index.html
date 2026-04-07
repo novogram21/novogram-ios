@@ -12149,16 +12149,19 @@
 
         
 
-        const { registerPlugin } = Capacitor;
-        // Инициализируем наш самописный Swift-плагин
-        const AudioRouter = registerPlugin('AudioRouter');
+        let AudioRouter = null;
+
+        // Безопасно инициализируем плагин, ТОЛЬКО если Capacitor существует
+        if (window.Capacitor && window.Capacitor.registerPlugin) {
+            AudioRouter = window.Capacitor.registerPlugin('AudioRouter');
+        }
 
         let isEarpiece = true; // По умолчанию звонок идет в ухо
 
         // Наша функция жесткого нативного переключения
         async function applyAudioRoute() {
-            // Проверяем, что мы на iOS (чтобы не сломать Android/Web)
-            if (window.Capacitor && window.Capacitor.getPlatform() === 'ios') {
+            // Проверяем, что мы на iOS и плагин успешно инициализирован
+            if (window.Capacitor && window.Capacitor.getPlatform() === 'ios' && AudioRouter) {
                 try {
                     // Передаем true, если хотим громкую связь, и false, если в ухо
                     await AudioRouter.setSpeaker({ isSpeaker: !isEarpiece });
