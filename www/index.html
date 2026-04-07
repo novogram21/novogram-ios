@@ -8590,12 +8590,12 @@
             playConnectingTone();
 
             try {
+                console.log("📞 [CALLER] Создаем WebRTC подключение...");
+                setupPeerConnection(); // СНАЧАЛА создаем объект звонка (pc)
+
                 // 🔥 ГЛАВНЫЙ ФИКС iOS: Запрашиваем медиа ДО любых сетевых запросов (Firebase)!
                 console.log("📞 [CALLER] Запрашиваем камеру/микрофон...");
-                await getMedia(isVideoCall);
-
-                // После успешного получения микрофона продолжаем логику
-                setupPeerConnection();
+                await getMedia(isVideoCall); // ЗАТЕМ получаем медиа и кладем их в pc
 
                 console.log("📞 [CALLER] Создаем сессию в Firebase...");
                 await sessionRef.set({
@@ -8707,28 +8707,17 @@
             rtdb.ref('incoming_calls/' + currentUser.uid).remove();
 
             try {
+                console.log("📥 [CALLEE] Создаем WebRTC подключение...");
+                setupPeerConnection(); // СНАЧАЛА создаем объект звонка (pc)
+
                 // 🔥 ГЛАВНЫЙ ФИКС iOS: Запрашиваем микрофон МГНОВЕННО после нажатия кнопки!
                 console.log("📥 [CALLEE] Запрашиваем свои медиа устройства...");
-                await getMedia(false);
+                await getMedia(false); // ЗАТЕМ получаем медиа и кладем их в pc
 
                 // А вот теперь спокойно идем в Firebase
                 console.log("📥 [CALLEE] Читаем сессию из Firebase...");
                 const sessionSnap = await sessionRef.once('value');
                 const callData = sessionSnap.val();
-
-                if (!callData || !callData.offer) {
-                    console.warn("📥 [CALLEE] Ошибка: Offer не найден в базе!");
-                    updateCallStatus("Звонок отменен");
-                    setTimeout(() => endCall(false), 2000);
-                    return;
-                }
-
-                const callerId = callData.caller;
-                currentFriendId = callerId;
-                const callerData = usersCache[callerId] || (callData.callerName ? { name: callData.callerName } : {});
-                document.getElementById('callCallerName').innerText = getDisplayName(callerId, callerData);
-
-                setupPeerConnection();
 
                 sessionRef.on('value', async snap => {
                     const data = snap.val();
@@ -12846,7 +12835,7 @@
                 // 4. ДВОЙНОЕ НАЖАТИЕ НАЗАД ДЛЯ ВЫХОДА (ТОЛЬКО ДЛЯ ТЕЛЕФОНОВ / MAUI)
                 if (!isExitReady) {
                     isExitReady = true;
-                    showToast("Нажмите еще раз для выхода");
+                    
                     // Создаем временный шаг-буфер, чтобы спасти от закрытия при первом тапе
                     history.pushState({ page: 'home' }, null, window.location.pathname + window.location.search);
 
