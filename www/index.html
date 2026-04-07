@@ -12341,8 +12341,12 @@
             swipeStartX = touch.clientX;
             swipeStartY = touch.clientY;
 
-            // Если свайп от самого левого края экрана (жест "Назад" в iOS), отключаем скрипт
-            if (swipeStartX < 40) {
+            // Определяем, что мы находимся именно внутри нативного iOS-приложения (Capacitor)
+            const isNativeIOSApp = (/Mac|iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) && (window.Capacitor || (window.webkit && window.webkit.messageHandlers));
+
+            // Отключаем наш скриптовый свайп у края экрана ДЛЯ ВСЕХ, КРОМЕ iOS-приложения.
+            // (оставляем веб-версии и Android как было, чтобы не ломать их поведение)
+            if (swipeStartX < 40 && !isNativeIOSApp) {
                 swipeTarget = null;
                 isBackSwiping = false;
                 isSwipeHorizontal = false;
@@ -12418,14 +12422,19 @@
                     const isIOS = /Mac|iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
                     if (deltaX > 0) {
-                        if (isIOS) {
+                        const isNativeIOSApp = isIOS && (window.Capacitor || (window.webkit && window.webkit.messageHandlers));
+
+                        // Блокируем свайп ТОЛЬКО для веб-версии iOS (Safari), чтобы не конфликтовать с её историей
+                        if (isIOS && !isNativeIOSApp) {
                             isSwipeHorizontal = false;
                             isBackSwiping = false;
                         } else {
+                            // Разрешаем красивый JS-свайп для Android и нативного iOS-приложения
                             isBackSwiping = true;
                             swipeTarget = null;
                         }
-                    } else if (deltaX < 0 && swipeTarget) {
+                    }
+                 else if (deltaX < 0 && swipeTarget) {
                         isBackSwiping = false;
                     } else {
                         isSwipeHorizontal = false;

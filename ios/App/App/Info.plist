@@ -5,7 +5,7 @@
     <key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<string>ru</string>
 	<key>CFBundleDisplayName</key>
         <string>Novogram</string>
 	<key>CFBundleExecutable</key>
@@ -65,6 +65,11 @@
 <string>Приложению нужен доступ к галерее для выбора фотографий.</string>
 <key>NSPhotoLibraryAddUsageDescription</key>
 <string>Приложению нужен доступ для сохранения фотографий.</string>
+<key>CFBundleLocalizations</key>
+<array>
+    <string>ru</string>
+</array>
+
 
 </dict>
 </plist>
